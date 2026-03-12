@@ -3,7 +3,6 @@
 - Chrome 打开腾讯视频、爱奇艺、B站
 - 页面滚动、视频点击播放
 - 全屏操作
-- IE 打开在线视频（兼容性测试）
 """
 import time
 import pytest
@@ -119,43 +118,3 @@ class TestChromeOnlineVideo:
         automator.screenshot("iqiyi_scroll_home")
 
 
-# ---------------------------------------------------------------------------
-# IE 测试（使用 PyAutoGUI 直接操作，Playwright 不支持 IE）
-# ---------------------------------------------------------------------------
-
-@pytest.mark.browser
-@pytest.mark.ie
-class TestIEOnlineVideo:
-
-    def test_ie_open_qqvideo(self, automator: WindowsAutomator):
-        """IE 打开腾讯视频网站"""
-        ie_exe = SETTINGS.apps["ie"]
-        import os
-        if not os.path.exists(ie_exe):
-            pytest.skip("IE 未找到")
-
-        automator.launch_app(f'"{ie_exe}" {SETTINGS.urls["qqvideo"]}', wait=SETTINGS.launch_wait)
-        automator.wait(SETTINGS.page_load_wait, "等待腾讯视频页面加载")
-        automator.screenshot("ie_qqvideo_loaded")
-
-        # 滚动
-        automator.scroll_down(clicks=5)
-        automator.wait(0.5)
-        automator.screenshot("ie_qqvideo_scrolled")
-
-        automator.hotkey("alt", "f4")
-        automator.wait(1.0)
-
-    def test_ie_open_iqiyi(self, automator: WindowsAutomator):
-        """IE 打开爱奇艺网站"""
-        ie_exe = SETTINGS.apps["ie"]
-        import os
-        if not os.path.exists(ie_exe):
-            pytest.skip("IE 未找到")
-
-        automator.launch_app(f'"{ie_exe}" {SETTINGS.urls["iqiyi"]}', wait=SETTINGS.launch_wait)
-        automator.wait(SETTINGS.page_load_wait, "等待爱奇艺页面加载")
-        automator.screenshot("ie_iqiyi_loaded")
-
-        automator.hotkey("alt", "f4")
-        automator.wait(1.0)

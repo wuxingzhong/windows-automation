@@ -89,30 +89,6 @@ APP_RULES: dict[str, dict] = {
         "reg_subpath": None,
         "path_name": "chrome.exe",
     },
-    "ie": {
-        "candidates": [
-            r"C:\Program Files\Internet Explorer\iexplore.exe",
-            r"C:\Program Files (x86)\Internet Explorer\iexplore.exe",
-        ],
-        "reg_keys": [
-            (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\iexplore.exe", ""),
-        ],
-        "reg_subpath": None,
-        "path_name": "iexplore.exe",
-    },
-    "caiyun": {
-        "candidates": [
-            r"C:\Program Files\ChinaMobile\HeyCloud\HeyCloud.exe",
-            r"C:\Program Files (x86)\ChinaMobile\HeyCloud\HeyCloud.exe",
-            os.path.expandvars(r"%LOCALAPPDATA%\ChinaMobile\HeyCloud\HeyCloud.exe"),
-        ],
-        "reg_keys": [
-            (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\ChinaMobile\HeyCloud", "InstallPath"),
-            (winreg.HKEY_CURRENT_USER,  r"SOFTWARE\ChinaMobile\HeyCloud", "InstallPath"),
-        ],
-        "reg_subpath": "HeyCloud.exe",
-        "path_name": "HeyCloud.exe",
-    },
 }
 
 

@@ -6,7 +6,6 @@ import os
 from pathlib import Path
 
 project_dir = Path(SPECPATH)
-
 block_cipher = None
 
 a = Analysis(
@@ -14,12 +13,9 @@ a = Analysis(
     pathex=[str(project_dir)],
     binaries=[],
     datas=[
-        # 将 tests 目录整体打入 exe
         (str(project_dir / 'tests'), 'tests'),
-        # pytest 插件需要的数据文件
     ],
     hiddenimports=[
-        # pytest 及插件
         'pytest',
         'pytest_html',
         '_pytest',
@@ -27,7 +23,6 @@ a = Analysis(
         '_pytest.capture',
         '_pytest.terminal',
         'pluggy',
-        # pywinauto
         'pywinauto',
         'pywinauto.application',
         'pywinauto.controls',
@@ -36,15 +31,12 @@ a = Analysis(
         'pywinauto.findwindows',
         'pywinauto.keyboard',
         'pywinauto.mouse',
-        # pyautogui
         'pyautogui',
         'pyscreeze',
         'pymsgbox',
         'pytweening',
-        # playwright
         'playwright',
         'playwright.sync_api',
-        # 项目自身模块
         'config',
         'config.settings',
         'config.app_finder',
@@ -56,7 +48,6 @@ a = Analysis(
         'tests.test_02_local_player',
         'tests.test_03_browser_video',
         'tests.test_04_office_apps',
-        # 标准库补充
         'configparser',
         'dataclasses',
         'subprocess',
@@ -66,11 +57,8 @@ a = Analysis(
         'os',
     ],
     hookspath=[],
-    hooksconfig={},
     runtime_hooks=[],
     excludes=[],
-    win_no_prefer_redirects=False,
-    win_private_assemblies=False,
     cipher=block_cipher,
     noarchive=False,
 )
@@ -84,17 +72,16 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='run_tests',           # 生成 run_tests.exe
+    name='run_tests',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
-    upx=True,                   # 压缩，减小体积（需安装 UPX）
+    upx=True,
     upx_exclude=[],
     runtime_tmpdir=None,
-    console=True,               # 保留控制台窗口，方便查看日志
+    console=True,
     disable_windowed_traceback=False,
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    # icon='icon.ico',          # 可选：自定义图标
 )

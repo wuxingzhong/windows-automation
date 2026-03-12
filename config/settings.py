@@ -41,8 +41,6 @@ class Settings:
         "et":      _get(_cfg, "apps", "et",      r"C:\Program Files\WPS Office\office6\et.exe"),
         "qqvideo": _get(_cfg, "apps", "qqvideo", r"C:\Program Files (x86)\Tencent\QQlive\QQlive.exe"),
         "chrome":  _get(_cfg, "apps", "chrome",  r"C:\Program Files\Google\Chrome\Application\chrome.exe"),
-        "ie":      _get(_cfg, "apps", "ie",      r"C:\Program Files\Internet Explorer\iexplore.exe"),
-        "caiyun":  _get(_cfg, "apps", "caiyun",  r"C:\Program Files\ChinaMobile\HeyCloud\HeyCloud.exe"),
     })
 
     # 测试素材路径

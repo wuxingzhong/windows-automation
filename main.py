@@ -3,6 +3,7 @@ Windows 自动化测试入口
 双击 run_tests.exe 即可运行所有测试
 """
 import configparser
+import os
 import sys
 import time
 from pathlib import Path
