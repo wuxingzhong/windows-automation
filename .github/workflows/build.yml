@@ -17,6 +17,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+          # 不缓存 pip，确保每次拿到最新包
           cache: 'pip'
           cache-dependency-path: requirements.txt
 
@@ -25,11 +26,30 @@ jobs:
           pip install -r requirements.txt
           pip install pyinstaller
 
+      - name: Verify key packages installed
+        run: |
+          python -c "import pytest; print('pytest', pytest.__version__)"
+          python -c "import pytest_html; print('pytest_html', pytest_html.__version__)"
+          python -c "import pywinauto; print('pywinauto ok')"
+          python -c "import pyautogui; print('pyautogui ok')"
+          python -c "import playwright; print('playwright ok')"
+
       - name: Install Playwright Chromium
         run: playwright install chromium
 
+      - name: Clean previous build
+        run: |
+          if exist build rmdir /s /q build
+          if exist dist  rmdir /s /q dist
+        shell: cmd
+
       - name: Build
-        run: pyinstaller run_tests.spec
+        run: pyinstaller run_tests.spec --clean
+
+      - name: Show exe size
+        run: |
+          dir dist\run_tests.exe
+        shell: cmd
 
       - name: Copy config.ini to dist
         run: copy config.ini dist\config.ini
