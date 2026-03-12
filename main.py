@@ -83,10 +83,9 @@ def main() -> int:
     (output_dir / "screenshots").mkdir(exist_ok=True)
 
     ts = time.strftime("%Y%m%d_%H%M%S")
-    report_path = output_dir / f"report_{ts}.html"
     log_path = output_dir / f"log_{ts}.txt"
 
-    print(f"  报告: {report_path}")
+    print(f"  日志: {log_path}")
     print(f"  截图: {output_dir / 'screenshots'}")
     print()
 
@@ -101,8 +100,6 @@ def main() -> int:
         tests_dir,
         "-v",
         "--tb=short",
-        f"--html={report_path}",
-        "--self-contained-html",
         f"--log-file={log_path}",
         "--log-file-level=INFO",
         "--log-file-format=%(asctime)s [%(levelname)s] %(name)s - %(message)s",
@@ -113,7 +110,6 @@ def main() -> int:
     print()
     print("=" * 60)
     print(f"  测试完成，退出码: {exit_code}")
-    print(f"  HTML 报告: {report_path}")
     print(f"  日志文件: {log_path}")
     print("=" * 60)
     print()

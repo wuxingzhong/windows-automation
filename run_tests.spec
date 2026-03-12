@@ -8,18 +8,27 @@ from pathlib import Path
 project_dir = Path(SPECPATH)
 block_cipher = None
 
+import glob
+import sysconfig
+
+# 收集所有已安装包的 dist-info（含 entry_points.txt），让 pytest 能发现插件
+def collect_dist_info():
+    result = []
+    site_packages = sysconfig.get_paths()["purelib"]
+    for dist_info in glob.glob(f"{site_packages}/*.dist-info"):
+        result.append((dist_info, "."))
+    return result
+
 a = Analysis(
     [str(project_dir / 'main.py')],
     pathex=[str(project_dir)],
     binaries=[],
     datas=[
         (str(project_dir / 'tests'), 'tests'),
+        *collect_dist_info(),
     ],
     hiddenimports=[
         'pytest',
-        'pytest_html',
-        'pytest_html.basereport',
-        'pytest_html.html_report',
         '_pytest',
         '_pytest.logging',
         '_pytest.capture',

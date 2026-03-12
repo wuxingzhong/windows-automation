@@ -29,7 +29,6 @@ jobs:
       - name: Verify key packages installed
         run: |
           python -c "import pytest; print('pytest', pytest.__version__)"
-          python -c "import pytest_html; print('pytest_html', pytest_html.__version__)"
           python -c "import pywinauto; print('pywinauto ok')"
           python -c "import pyautogui; print('pyautogui ok')"
           python -c "import playwright; print('playwright ok')"

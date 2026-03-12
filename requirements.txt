@@ -3,7 +3,6 @@ pywinauto>=0.6.8          # Windows GUI 控件操作
 pyautogui>=0.9.54         # 鼠标键盘模拟
 playwright>=1.40.0        # 浏览器自动化
 pytest>=7.4.0             # 测试框架
-pytest-html>=4.0.0        # HTML 测试报告
 Pillow>=10.0.0            # 截图处理
 
 # 打包工具
