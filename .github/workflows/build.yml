@@ -1,0 +1,49 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'windows-automation/**'
+  workflow_dispatch:  # 支持手动触发
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        working-directory: windows-automation
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Install Playwright Chromium
+        run: playwright install chromium
+
+      - name: Build EXE
+        run: pyinstaller run_tests.spec
+
+      - name: Copy config.ini to dist
+        run: copy config.ini dist\config.ini
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: run_tests-windows
+          path: |
+            windows-automation/dist/run_tests.exe
+            windows-automation/dist/config.ini
+          retention-days: 30
