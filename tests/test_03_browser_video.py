@@ -23,10 +23,31 @@ class TestChromeOnlineVideo:
     def browser_page(self):
         """启动 Chrome 并创建页面"""
         with sync_playwright() as p:
-            browser = p.chromium.launch(
-                headless=False,
-                args=["--start-maximized"],
-            )
+            # 优先使用配置文件中的 Chrome 路径
+            chrome_path = SETTINGS.apps.get("chrome", "")
+
+            try:
+                if chrome_path and chrome_path.endswith("chrome.exe"):
+                    # 使用配置的 Chrome 可执行文件
+                    browser = p.chromium.launch(
+                        headless=False,
+                        executable_path=chrome_path,
+                        args=["--start-maximized"],
+                    )
+                else:
+                    # 尝试使用系统 Chrome
+                    browser = p.chromium.launch(
+                        headless=False,
+                        channel="chrome",
+                        args=["--start-maximized"],
+                    )
+            except Exception:
+                # 最后尝试使用 Playwright 自带的 Chromium
+                browser = p.chromium.launch(
+                    headless=False,
+                    args=["--start-maximized"],
+                )
+
             context = browser.new_context(no_viewport=True)
             page = context.new_page()
             yield page

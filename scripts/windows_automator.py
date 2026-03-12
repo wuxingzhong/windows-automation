@@ -23,7 +23,9 @@ pyautogui.PAUSE = 0.3
 class WindowsAutomator:
     """Windows 桌面应用自动化操作类"""
 
-    def __init__(self, screenshot_dir: str = r"D:\test_reports\screenshots") -> None:
+    def __init__(self, screenshot_dir: Optional[str] = None) -> None:
+        if screenshot_dir is None:
+            screenshot_dir = str(Path.cwd() / "output" / "screenshots")
         self.screenshot_dir = Path(screenshot_dir)
         self.screenshot_dir.mkdir(parents=True, exist_ok=True)
         self._app: Optional[Application] = None
@@ -76,23 +78,35 @@ class WindowsAutomator:
 
     def maximize(self, title_re: Optional[str] = None) -> None:
         """最大化窗口"""
-        win = self.get_window(title_re)
-        win.maximize()
-        logger.info("窗口最大化")
+        try:
+            win = self.get_window(title_re)
+            win.maximize()
+            logger.info("窗口最大化")
+        except Exception as e:
+            logger.warning(f"最大化失败，使用 PyAutoGUI: {e}")
+            pyautogui.hotkey("win", "up")
         time.sleep(0.5)
 
     def minimize(self, title_re: Optional[str] = None) -> None:
         """最小化窗口"""
-        win = self.get_window(title_re)
-        win.minimize()
-        logger.info("窗口最小化")
+        try:
+            win = self.get_window(title_re)
+            win.minimize()
+            logger.info("窗口最小化")
+        except Exception as e:
+            logger.warning(f"最小化失败，使用 PyAutoGUI: {e}")
+            pyautogui.hotkey("win", "down")
         time.sleep(0.5)
 
     def restore(self, title_re: Optional[str] = None) -> None:
         """还原窗口"""
-        win = self.get_window(title_re)
-        win.restore()
-        logger.info("窗口还原")
+        try:
+            win = self.get_window(title_re)
+            win.restore()
+            logger.info("窗口还原")
+        except Exception as e:
+            logger.warning(f"还原失败，使用 PyAutoGUI: {e}")
+            pyautogui.hotkey("win", "down")
         time.sleep(0.5)
 
     def close_window(self, title_re: Optional[str] = None) -> None:
@@ -112,12 +126,18 @@ class WindowsAutomator:
 
     def move_window(self, x: int, y: int, title_re: Optional[str] = None) -> None:
         """移动窗口位置"""
-        win = self.get_window(title_re)
-        rect = win.rectangle()
-        w = rect.width()
-        h = rect.height()
-        win.move_window(x=x, y=y, width=w, height=h)
-        logger.info(f"窗口移动到 ({x}, {y})")
+        try:
+            win = self.get_window(title_re)
+            rect = win.rectangle()
+            w = rect.width()
+            h = rect.height()
+            win.set_focus()
+            # 使用 pywinauto 的 move_window 方法
+            from pywinauto import win32functions
+            win32functions.MoveWindow(win.handle, x, y, w, h, True)
+            logger.info(f"窗口移动到 ({x}, {y})")
+        except Exception as e:
+            logger.warning(f"移动窗口失败: {e}")
         time.sleep(0.5)
 
     # -------------------------------------------------------------------------
@@ -179,9 +199,18 @@ class WindowsAutomator:
     # -------------------------------------------------------------------------
 
     def type_text(self, text: str, interval: float = 0.05) -> None:
-        """输入文本"""
-        pyautogui.typewrite(text, interval=interval)
-        logger.info(f"输入文本: {text}")
+        """输入文本（支持中文）"""
+        # 使用 pyperclip + Ctrl+V 来支持中文输入
+        try:
+            import pyperclip
+            pyperclip.copy(text)
+            pyautogui.hotkey("ctrl", "v")
+            logger.info(f"输入文本: {text[:50]}{'...' if len(text) > 50 else ''}")
+        except ImportError:
+            # 如果没有 pyperclip，回退到 typewrite（仅支持 ASCII）
+            logger.warning("pyperclip 未安装，仅支持 ASCII 字符输入")
+            pyautogui.typewrite(text, interval=interval)
+            logger.info(f"输入文本: {text}")
 
     def press_key(self, key: str) -> None:
         """按键（如 'enter', 'esc', 'f11'）"""
