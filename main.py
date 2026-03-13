@@ -71,12 +71,13 @@ def main() -> int:
     print()
 
     # 自动探测应用路径并更新 config.ini
-    auto_detect_and_update_ini(base_dir)
+    # 注释掉以避免在云电脑环境中 winreg 模块报错
+    # auto_detect_and_update_ini(base_dir)
 
     # 重新加载配置（拿到最新的探测结果）
-    import importlib
-    import config.settings as _settings_mod
-    importlib.reload(_settings_mod)
+    # import importlib
+    # import config.settings as _settings_mod
+    # importlib.reload(_settings_mod)
 
     output_dir = base_dir / "output"
     output_dir.mkdir(exist_ok=True)
