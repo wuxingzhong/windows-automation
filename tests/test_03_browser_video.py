@@ -113,12 +113,11 @@ class TestChromeOnlineVideo:
 
         # 尝试点击播放按钮
         play_button_selectors = [
-            ".txp_btn_play",         # 播放按钮类名
-            ".txp-play-btn",         # 播放按钮类名
-            "button[aria-label*='播放']",
-            "button[aria-label*='play']",
-            ".video-play-btn",
             "text=立即播放",
+            "text=在线播放",
+            ".txp_btn_play",
+            ".txp-play-btn",
+            "button[aria-label*='播放']",
             "text=播放",
         ]
 

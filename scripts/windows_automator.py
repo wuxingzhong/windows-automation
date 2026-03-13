@@ -29,6 +29,7 @@ class WindowsAutomator:
         self.screenshot_dir = Path(screenshot_dir)
         self.screenshot_dir.mkdir(parents=True, exist_ok=True)
         self._app: Optional[Application] = None
+        self._main_window = None  # 保存主窗口引用
 
     # -------------------------------------------------------------------------
     # 应用启动与连接
@@ -39,6 +40,11 @@ class WindowsAutomator:
         logger.info(f"启动应用: {exe_path}")
         self._app = Application(backend="uia").start(exe_path)
         time.sleep(wait)
+        # 保存主窗口引用
+        try:
+            self._main_window = self._app.top_window()
+        except Exception as e:
+            logger.warning(f"无法获取主窗口引用: {e}")
         return self._app
 
     def launch_app_with_file(self, exe_path: str, file_path: str, wait: float = 3.0) -> Application:
@@ -46,6 +52,11 @@ class WindowsAutomator:
         logger.info(f"启动应用: {exe_path}，打开文件: {file_path}")
         self._app = Application(backend="uia").start(f'"{exe_path}" "{file_path}"')
         time.sleep(wait)
+        # 保存主窗口引用
+        try:
+            self._main_window = self._app.top_window()
+        except Exception as e:
+            logger.warning(f"无法获取主窗口引用: {e}")
         return self._app
 
     def open_with_default_app(self, file_path: str, wait: float = 3.0) -> None:
@@ -62,6 +73,11 @@ class WindowsAutomator:
         if process:
             kwargs["process"] = process
         self._app = Application(**kwargs).connect()
+        # 保存主窗口引用
+        try:
+            self._main_window = self._app.top_window()
+        except Exception as e:
+            logger.warning(f"无法获取主窗口引用: {e}")
         return self._app
 
     # -------------------------------------------------------------------------
@@ -74,6 +90,9 @@ class WindowsAutomator:
             raise RuntimeError("请先调用 launch_app() 或 connect_app()")
         if title_re:
             return self._app.window(title_re=title_re)
+        # 优先使用保存的主窗口引用
+        if self._main_window is not None:
+            return self._main_window
         return self._app.top_window()
 
     def maximize(self, title_re: Optional[str] = None) -> None:
@@ -104,13 +123,22 @@ class WindowsAutomator:
         """还原窗口"""
         try:
             win = self.get_window(title_re)
+            # 检查窗口是否最小化，如果是则先显示
+            if hasattr(win, 'is_minimized') and win.is_minimized():
+                logger.info("窗口已最小化，尝试显示")
+                # 使用 Windows API 显示窗口
+                from pywinauto import win32defines
+                win.set_show_state(win32defines.SW_RESTORE)
+                time.sleep(0.5)
             win.restore()
             time.sleep(0.3)  # 等待窗口还原完成
             win.set_focus()  # 确保窗口获得焦点
             logger.info("窗口还原并获得焦点")
         except Exception as e:
             logger.warning(f"还原失败，使用 PyAutoGUI: {e}")
-            pyautogui.hotkey("win", "down")
+            # 尝试点击任务栏图标
+            pyautogui.hotkey("alt", "tab")
+            time.sleep(0.3)
         finally:
             time.sleep(0.5)
 
