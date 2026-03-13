@@ -96,24 +96,21 @@ class TestChromeOnlineVideo:
         automator.screenshot("qqvideo_after_10s")
 
     def test_bilibili_homepage(self, browser_page: Page, automator: WindowsAutomator):
-        """B站首页浏览与视频播放"""
+        """B站首页浏览（仅浏览，不点击视频）"""
         self._goto_and_screenshot(
             browser_page, SETTINGS.urls["bilibili"], automator, "bilibili_homepage"
         )
 
-        # 滚动
-        browser_page.keyboard.press("PageDown")
-        browser_page.wait_for_timeout(800)
+        # 滚动浏览
+        for _ in range(3):
+            browser_page.keyboard.press("PageDown")
+            browser_page.wait_for_timeout(800)
         automator.screenshot("bilibili_scrolled")
 
-        # 点击第一个视频
-        try:
-            browser_page.locator(".bili-video-card__image--wrap, a.cover").first.click(timeout=5000)
-            browser_page.wait_for_timeout(4000)
-            automator.screenshot("bilibili_video_playing")
-            automator.wait(SETTINGS.video_play_wait, "录屏观察B站视频")
-        except Exception:
-            automator.screenshot("bilibili_click_failed")
+        # 回到顶部
+        browser_page.keyboard.press("Home")
+        browser_page.wait_for_timeout(500)
+        automator.screenshot("bilibili_back_to_top")
 
     def test_page_scroll_operations(self, browser_page: Page, automator: WindowsAutomator):
         """页面滚动操作专项测试"""

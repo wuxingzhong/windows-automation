@@ -25,7 +25,9 @@ def _load_ini(base_dir: Path) -> configparser.ConfigParser:
 
 
 def _get(cfg: configparser.ConfigParser, section: str, key: str, fallback: str) -> str:
-    return cfg.get(section, key, fallback=fallback)
+    value = cfg.get(section, key, fallback=fallback)
+    # 如果配置值为空字符串，使用 fallback
+    return value if value.strip() else fallback
 
 
 BASE_DIR = _get_base_dir()

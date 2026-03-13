@@ -27,6 +27,10 @@ class TestWPS:
             pytest.skip(f"测试文档不存在: {doc}")
 
         automator.launch_app_with_file(exe, doc, wait=SETTINGS.launch_wait)
+
+        # 跳过登录弹窗
+        automator.skip_wps_login_dialogs(timeout=3.0)
+
         automator.screenshot("wps_writer_opened")
 
         automator.wait(2.0, "等待文档完全加载")
@@ -75,6 +79,10 @@ class TestWPS:
             pytest.skip(f"测试 Excel 不存在: {doc}")
 
         automator.launch_app_with_file(exe, doc, wait=SETTINGS.launch_wait)
+
+        # 跳过登录弹窗
+        automator.skip_wps_login_dialogs(timeout=3.0)
+
         automator.wait(2.0, "等待表格加载")
         automator.maximize()
         automator.screenshot("wps_excel_opened")
@@ -108,6 +116,10 @@ class TestWPS:
             pytest.skip(f"测试 PPT 不存在: {doc}")
 
         automator.launch_app_with_file(exe, doc, wait=SETTINGS.launch_wait)
+
+        # 跳过登录弹窗
+        automator.skip_wps_login_dialogs(timeout=3.0)
+
         automator.wait(2.0, "等待 PPT 加载")
         automator.maximize()
         automator.screenshot("wps_ppt_opened")
@@ -139,6 +151,10 @@ class TestWPS:
             pytest.skip(f"WPS 未安装: {exe}")
 
         automator.launch_app(exe, wait=SETTINGS.launch_wait)
+
+        # 跳过登录弹窗
+        automator.skip_wps_login_dialogs(timeout=3.0)
+
         automator.wait(2.0)
         automator.maximize()
 

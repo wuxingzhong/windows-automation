@@ -120,6 +120,8 @@ class WindowsAutomator:
         """调整窗口大小"""
         win = self.get_window(title_re)
         win.restore()
+        win.set_focus()  # 确保窗口获得焦点
+        time.sleep(0.3)  # 等待焦点切换完成
         win.resize_client(width, height)
         logger.info(f"窗口调整为 {width}x{height}")
         time.sleep(0.5)
@@ -276,3 +278,37 @@ class WindowsAutomator:
             capture_output=True, text=True
         )
         return process_name.lower() in result.stdout.lower()
+
+    # -------------------------------------------------------------------------
+    # WPS 专用辅助方法
+    # -------------------------------------------------------------------------
+
+    def skip_wps_login_dialogs(self, timeout: float = 5.0) -> None:
+        """尝试跳过 WPS 启动时的登录/广告弹窗"""
+        logger.info("尝试跳过 WPS 登录弹窗")
+        deadline = time.time() + timeout
+
+        while time.time() < deadline:
+            # 尝试按 ESC 关闭弹窗
+            pyautogui.press("esc")
+            time.sleep(0.3)
+
+            # 尝试点击常见的关闭按钮位置（右上角）
+            screen_w, screen_h = pyautogui.size()
+            # 尝试多个可能的关闭按钮位置
+            close_positions = [
+                (screen_w - 50, 50),   # 右上角
+                (screen_w - 100, 100), # 稍微偏下
+                (screen_w // 2 + 200, screen_h // 2 - 200),  # 弹窗右上
+            ]
+
+            for x, y in close_positions:
+                try:
+                    pyautogui.click(x, y)
+                    time.sleep(0.2)
+                except Exception:
+                    pass
+
+            time.sleep(0.5)
+
+        logger.info("完成跳过弹窗尝试")
