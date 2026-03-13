@@ -103,7 +103,9 @@ class WindowsAutomator:
         try:
             win = self.get_window(title_re)
             win.restore()
-            logger.info("窗口还原")
+            time.sleep(0.3)  # 等待窗口还原完成
+            win.set_focus()  # 确保窗口获得焦点
+            logger.info("窗口还原并获得焦点")
         except Exception as e:
             logger.warning(f"还原失败，使用 PyAutoGUI: {e}")
             pyautogui.hotkey("win", "down")

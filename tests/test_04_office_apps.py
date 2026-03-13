@@ -51,6 +51,11 @@ class TestWPS:
 
     def test_wps_writer_edit_and_save(self, automator: WindowsAutomator):
         """WPS 文字：编辑内容并保存"""
+        # 点击文档区域确保获得焦点
+        screen_w, screen_h = 1920, 1080  # 假设常见分辨率
+        automator.click(screen_w // 2, screen_h // 2)
+        automator.wait(0.5)
+
         # 在文档末尾追加文字
         automator.hotkey("ctrl", "end")  # 跳到末尾
         automator.wait(0.3)
@@ -162,6 +167,11 @@ class TestWPS:
         automator.hotkey("ctrl", "n")
         automator.wait(1.0)
         automator.screenshot("wps_new_doc")
+
+        # 点击文档区域确保获得焦点
+        screen_w, screen_h = 1920, 1080
+        automator.click(screen_w // 2, screen_h // 2)
+        automator.wait(0.5)
 
         # 输入测试内容
         automator.type_text("Windows 自动化测试\n")

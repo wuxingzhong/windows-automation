@@ -91,9 +91,33 @@ class TestChromeOnlineVideo:
         browser_page.wait_for_timeout(5000)
         automator.screenshot("qqvideo_video_page")
 
+        # 尝试点击"立即播放"按钮（处理404或视频加载失败的情况）
+        try:
+            play_button_selectors = [
+                "text=立即播放",
+                "text=播放",
+                ".txp_btn_play",
+                ".txp-play-btn",
+                "[aria-label*='播放']",
+                "button:has-text('播放')",
+            ]
+            for selector in play_button_selectors:
+                try:
+                    browser_page.locator(selector).first.click(timeout=2000)
+                    browser_page.wait_for_timeout(1000)
+                    break
+                except Exception:
+                    continue
+        except Exception:
+            pass
+
+        # 等待15秒让视频播放
+        automator.wait(15.0, "等待视频播放15秒")
+        automator.screenshot("qqvideo_after_15s")
+
         # 录屏观察
         automator.wait(SETTINGS.video_play_wait, "录屏观察腾讯视频在线播放")
-        automator.screenshot("qqvideo_after_10s")
+        automator.screenshot("qqvideo_after_play")
 
     def test_bilibili_homepage(self, browser_page: Page, automator: WindowsAutomator):
         """B站首页浏览（仅浏览，不点击视频）"""
