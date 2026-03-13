@@ -85,7 +85,8 @@ class WindowsAutomator:
         except Exception as e:
             logger.warning(f"最大化失败，使用 PyAutoGUI: {e}")
             pyautogui.hotkey("win", "up")
-        time.sleep(0.5)
+        finally:
+            time.sleep(0.5)
 
     def minimize(self, title_re: Optional[str] = None) -> None:
         """最小化窗口"""
@@ -96,7 +97,8 @@ class WindowsAutomator:
         except Exception as e:
             logger.warning(f"最小化失败，使用 PyAutoGUI: {e}")
             pyautogui.hotkey("win", "down")
-        time.sleep(0.5)
+        finally:
+            time.sleep(0.5)
 
     def restore(self, title_re: Optional[str] = None) -> None:
         """还原窗口"""
@@ -109,7 +111,8 @@ class WindowsAutomator:
         except Exception as e:
             logger.warning(f"还原失败，使用 PyAutoGUI: {e}")
             pyautogui.hotkey("win", "down")
-        time.sleep(0.5)
+        finally:
+            time.sleep(0.5)
 
     def close_window(self, title_re: Optional[str] = None) -> None:
         """关闭窗口"""
@@ -120,13 +123,17 @@ class WindowsAutomator:
 
     def resize_window(self, width: int, height: int, title_re: Optional[str] = None) -> None:
         """调整窗口大小"""
-        win = self.get_window(title_re)
-        win.restore()
-        win.set_focus()  # 确保窗口获得焦点
-        time.sleep(0.3)  # 等待焦点切换完成
-        win.resize_client(width, height)
-        logger.info(f"窗口调整为 {width}x{height}")
-        time.sleep(0.5)
+        try:
+            win = self.get_window(title_re)
+            win.restore()
+            win.set_focus()  # 确保窗口获得焦点
+            time.sleep(0.3)  # 等待焦点切换完成
+            win.resize_client(width, height)
+            logger.info(f"窗口调整为 {width}x{height}")
+        except Exception as e:
+            logger.warning(f"调整窗口大小失败: {e}")
+        finally:
+            time.sleep(0.5)
 
     def move_window(self, x: int, y: int, title_re: Optional[str] = None) -> None:
         """移动窗口位置"""
@@ -142,7 +149,8 @@ class WindowsAutomator:
             logger.info(f"窗口移动到 ({x}, {y})")
         except Exception as e:
             logger.warning(f"移动窗口失败: {e}")
-        time.sleep(0.5)
+        finally:
+            time.sleep(0.5)
 
     # -------------------------------------------------------------------------
     # 鼠标操作
