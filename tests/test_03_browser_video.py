@@ -83,33 +83,52 @@ class TestChromeOnlineVideo:
             browser_page, SETTINGS.urls["qqvideo"], automator, "qqvideo_before_play"
         )
 
-        try:
-            browser_page.locator(".result_item, .cover-small, a.item").first.click(timeout=5000)
-        except Exception:
-            browser_page.goto("https://v.qq.com/x/cover/mzc00200mp2zo4y/v0043ri2gje.html")
+        # 尝试多种选择器从首页点击视频
+        video_clicked = False
+        video_selectors = [
+            "a[href*='/x/cover/']",  # 腾讯视频链接格式
+            "a[href*='/x/page/']",   # 页面链接格式
+            ".list_item a",          # 列表项链接
+            ".figure a",             # 图片链接
+            "a.item",                # 通用项链接
+        ]
+
+        for selector in video_selectors:
+            try:
+                # 等待元素出现并点击
+                browser_page.locator(selector).first.wait_for(state="visible", timeout=3000)
+                browser_page.locator(selector).first.click(timeout=2000)
+                video_clicked = True
+                break
+            except Exception:
+                continue
+
+        # 如果所有选择器都失败，使用备用视频链接（更新为有效链接）
+        if not video_clicked:
+            # 使用腾讯视频热门内容页面作为备用
+            browser_page.goto("https://v.qq.com/x/bu/pagesheet/list?append=1&channel=cartoon&iarea=1&listpage=1&offset=0")
 
         browser_page.wait_for_timeout(5000)
         automator.screenshot("qqvideo_video_page")
 
-        # 尝试点击"立即播放"按钮（处理404或视频加载失败的情况）
-        try:
-            play_button_selectors = [
-                "text=立即播放",
-                "text=播放",
-                ".txp_btn_play",
-                ".txp-play-btn",
-                "[aria-label*='播放']",
-                "button:has-text('播放')",
-            ]
-            for selector in play_button_selectors:
-                try:
-                    browser_page.locator(selector).first.click(timeout=2000)
-                    browser_page.wait_for_timeout(1000)
-                    break
-                except Exception:
-                    continue
-        except Exception:
-            pass
+        # 尝试点击播放按钮
+        play_button_selectors = [
+            ".txp_btn_play",         # 播放按钮类名
+            ".txp-play-btn",         # 播放按钮类名
+            "button[aria-label*='播放']",
+            "button[aria-label*='play']",
+            ".video-play-btn",
+            "text=立即播放",
+            "text=播放",
+        ]
+
+        for selector in play_button_selectors:
+            try:
+                browser_page.locator(selector).first.click(timeout=2000)
+                browser_page.wait_for_timeout(1000)
+                break
+            except Exception:
+                continue
 
         # 等待15秒让视频播放
         automator.wait(15.0, "等待视频播放15秒")

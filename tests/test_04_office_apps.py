@@ -51,6 +51,20 @@ class TestWPS:
 
     def test_wps_writer_edit_and_save(self, automator: WindowsAutomator):
         """WPS 文字：编辑内容并保存"""
+        exe = SETTINGS.apps["wps"]
+        doc = SETTINGS.test_doc_word
+
+        if not os.path.exists(exe):
+            pytest.skip(f"WPS 未安装: {exe}")
+        if not os.path.exists(doc):
+            pytest.skip(f"测试文档不存在: {doc}")
+
+        # 打开文档
+        automator.launch_app_with_file(exe, doc, wait=SETTINGS.launch_wait)
+        automator.skip_wps_login_dialogs(timeout=3.0)
+        automator.wait(2.0, "等待文档加载")
+        automator.maximize()
+
         # 点击文档区域确保获得焦点
         screen_w, screen_h = 1920, 1080  # 假设常见分辨率
         automator.click(screen_w // 2, screen_h // 2)
